@@ -44,34 +44,6 @@ section {
     position: relative;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-}
-
-.box {
-    aspect-ratio: 1 / 1;
-    width: 100px;
-    height: 100px;
-    top: 0%;
-    left: 0;
-    background-color: rgb(245, 204, 79);
-    border-radius: 1em;
-
-}
-
-.box.yellow {
-    background-color: rgb(245, 204, 79);
-}
-
-.box.blue {
-    background-color: rgb(45, 185, 232);
-}
-
-.box.red {
-    background-color: rgb(245, 79, 79);
-}
-
 canvas {
     position: relative;
     aspect-ratio: 1068/600;
@@ -82,7 +54,7 @@ canvas {
 
 .title {
     color: white;
-    font-size: 14rem;
+    font-size: 14em;
     font-weight: 900;
     text-transform: uppercase;
     font-family: 'Inter', sans-serif;
@@ -129,7 +101,8 @@ canvas {
     height: 30dvh;
     background-color: black;
 }
-.logo1{
+
+.logo1 {
     width: 200px;
     height: 200px;
     position: fixed;
@@ -137,6 +110,7 @@ canvas {
     z-index: 1;
     transform: translate(-50%, 0%);
 }
+
 .logo {
     width: 200px;
     height: 200px;
@@ -149,6 +123,32 @@ canvas {
 .logo img {
     height: 100%;
 }
-.logo1 img{
-    width:100%;
+
+.logo1 img {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .title {
+        font-size: 8em;
+    }
+
+    .logo {
+        left: 10%;
+        width: 100%;
+        transform: translate(0, 70%);
+    }
+
+    .ball,
+    .ball2 {
+        display: none;
+    }
+
+    .section-third .steps-content {
+        padding: 2dvh;
+        min-width: 90dvw;
+    }
+    .main-card{
+        width: 100% !important;
+    }
 }
