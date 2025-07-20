@@ -28,12 +28,12 @@ function App() {
 
     const TOTAL_FRAMES = 50;
     setTotalImages(TOTAL_FRAMES);
-    
+
     const createURL = (frame: number, url: string) => {
       const id = (frame + 1).toString().padStart(2, '0');
       return `${url}${id}.png`;
     }
-    
+
     const images: HTMLImageElement[] = [];
     let loadedCount = 0;
 
@@ -57,13 +57,13 @@ function App() {
     // Load all images with progress tracking
     const loadAllImages = async () => {
       try {
-        const imagePromises = Array.from({ length: TOTAL_FRAMES }, (_, index) => 
+        const imagePromises = Array.from({ length: TOTAL_FRAMES }, (_, index) =>
           loadImage(index)
         );
-        
+
         const loadedImages = await Promise.all(imagePromises);
         images.push(...loadedImages);
-        
+
         // All images loaded successfully
         setIsLoading(false);
         initializeAnimations(images);
@@ -85,11 +85,11 @@ function App() {
         content: '.content',
       });
       smoother.scrollTrigger.update();
-      
+
       const imageCanvas = {
         frame: 0,
       }
-      
+
       const tl = gsap.timeline({
         defaults: {
           duration: 2,
@@ -97,20 +97,22 @@ function App() {
           yoyo: true,
         },
       });
-      
+
       const split = new SplitText('.title', {
         type: 'chars',
         autoSplit: true,
       });
-      
+
       tl.to(imageCanvas, {
         frame: TOTAL_FRAMES - 1,
         ease: 'none',
         snap: 'frame',
+        filter: 'blur(10px)',
         scrollTrigger: {
           scrub: 0.5,
         },
         onUpdate: render,
+
       }).to(split.chars, {
         x: 100,
         y: -200,
@@ -122,17 +124,13 @@ function App() {
         duration: 0.7,
         ease: "power4",
         stagger: 0.04
-      }).from('.ball', {
-        filter: 'blur(1px)',
-        rotate: 0,
-        x: '-100dvw',
-        y: -250,
-        scale: 4,
       }).to('.ball', {
+        filter: 'blur(1px)',
         rotate: 360,
-        x: '900dvw',
+        x: 2000,
+        scale: 4,
         scrollTrigger: {
-          scrub: .8,
+          scrub: .1,
         }
       }).to('.ball2', {
         filter: 'blur(1px)',
@@ -184,77 +182,91 @@ function App() {
 
       // Start rendering
       render();
+      window.addEventListener('scroll', () => blurOnScroll('image'));
+      const image2Element = document.getElementById('image2');
+      if(image2Element && window.innerHeight > image2Element.clientHeight){
+        window.addEventListener('scroll', () => blurOnScroll('image2'));
+      }
     }
 
   }, []);
+  const blurOnScroll = (id: string) => {
+    const windowHeight = window.innerHeight;
+    const scrollPosition = window.scrollY;
+    const blurAmount = scrollPosition / windowHeight * 2;
+    const canvas = document.getElementById(id) as HTMLCanvasElement | null;
+    if (!canvas) return;
+    canvas.style.filter = `blur(${blurAmount}px)`;
+  }
 
 
   return (
     <>
       {isLoading && (
         <div className="loading-screen">
+          <div className="logo1">
+            <img src={logo} alt="logo" />
+          </div>
           <div className="loading-content">
+
             <Spin size="large" />
-            <Typography.Title level={3} style={{ marginTop: 20, color: '#fff' }}>
+            <Typography.Title level={4} style={{ marginTop: 20, color: '#fff' }}>
               Loading FC 25 Experience...
             </Typography.Title>
-            <Progress 
-              percent={Math.round(loadingProgress)} 
+            <Progress
+              percent={Math.round(loadingProgress)}
               status="active"
               strokeColor="#1890ff"
               style={{ width: 300, marginTop: 20 }}
             />
-            <Typography.Text style={{ marginTop: 10, color: '#ccc' }}>
-              {imagesLoaded} / {totalImages} images loaded
-            </Typography.Text>
           </div>
         </div>
       )}
-      
+
       <div className="wrapper" style={{ display: isLoading ? 'none' : 'block' }}>
         <div className="content">
           <section>
             <div className="logo">
               <img src={logo} alt="logo" />
             </div>
-            <canvas id="image"></canvas>
+            <canvas id="image" />
             <h1 className="title">
               FC 25
             </h1>
-            <div className="ball"></div>
+            <div className="ball" />
           </section>
-        <section>
+          <section>
 
 
-          <Card hoverable className="main-card" style={cardStyle} styles={{ body: { padding: 0, overflow: 'hidden' } }}>
-            <Flex justify="space-between">
-              <img
-                alt="avatar"
-                src={img}
-                style={imgStyle}
-              />
-              <Flex vertical align="flex-end" justify="space-between" style={{ padding: 32 }}>
-                <Typography.Title level={3}>
-                  “fifa 25 is a football game that is very good and i like it very much and i want to play it”
-                </Typography.Title>
-                <Button type="primary" href="https://fifa.com" target="_blank" style={{ backgroundColor: '#000', color: '#fff' }}>
-                  Get Started
-                </Button>
+            <Card hoverable className="main-card" style={cardStyle} styles={{ body: { padding: 0, overflow: 'hidden' } }}>
+              <Flex justify="space-between">
+                <img
+                  alt="avatar"
+                  src={img}
+                  style={imgStyle}
+                />
+                <Flex vertical align="flex-end" justify="space-between" style={{ padding: 32 }}>
+                  <Typography.Title level={3}>
+                    “fifa 25 is a football game that is very good and i like it very much and i want to play it”
+                  </Typography.Title>
+                  <Button type="primary" href="https://fifa.com" target="_blank" style={{ backgroundColor: '#000', color: '#fff' }}>
+                    Get Started
+                  </Button>
+                </Flex>
               </Flex>
-            </Flex>
-          </Card>
-          <div className="ball2"></div>
-        </section>
-        <section>
-          <SectionThird />
-        </section>
-        <div className="footer">
-          <div className="footer-content">
-            <h1>Footer</h1>
+            </Card>
+            <div className="ball2"></div>
+          </section>
+          <section>
+            <SectionThird />
+          </section>
+          <div className="footer">
+            <div className="footer-content">
+              <h1>Footer</h1>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </>
   )
 }
