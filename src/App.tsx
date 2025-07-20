@@ -12,8 +12,7 @@ import logo from './assets/pngwing.png'
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [imagesLoaded, setImagesLoaded] = useState(0);
-  const [totalImages, setTotalImages] = useState(0);
+
 
   const cardStyle: React.CSSProperties = {
     width: 620,
@@ -27,7 +26,7 @@ function App() {
     gsap.registerPlugin(ScrollTrigger, SplitText, ScrollSmoother);
 
     const TOTAL_FRAMES = 50;
-    setTotalImages(TOTAL_FRAMES);
+
 
     const createURL = (frame: number, url: string) => {
       const id = (frame + 1).toString().padStart(2, '0');
@@ -42,7 +41,7 @@ function App() {
         const img = new Image();
         img.onload = () => {
           loadedCount++;
-          setImagesLoaded(loadedCount);
+
           setLoadingProgress((loadedCount / TOTAL_FRAMES) * 100);
           resolve(img);
         };
@@ -184,7 +183,7 @@ function App() {
       render();
       window.addEventListener('scroll', () => blurOnScroll('image'));
       const image2Element = document.getElementById('image2');
-      if(image2Element && window.innerHeight > image2Element.clientHeight){
+      if (image2Element && window.innerHeight > image2Element.clientHeight) {
         window.addEventListener('scroll', () => blurOnScroll('image2'));
       }
     }
