@@ -1,0 +1,16 @@
+.section-third{
+    position: relative;
+    width: 100dvw;
+    height: 100dvh;
+}
+.steps-content{
+    position: absolute;
+    min-width: 40dvw;
+    top: 0%;
+    left: 50%;
+    transform: translate(-50%, 20%);
+    padding: 10dvh;
+    border-radius: 1em;
+    background-color: rgba(255, 255, 255, 0.9);
+
+}

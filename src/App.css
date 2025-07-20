@@ -1,0 +1,117 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+}
+
+section {
+    height: 100dvh;
+}
+
+.wrapper {
+    background-image: url('./assets/FC25_Base_BG.dca5e4d1.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.box {
+    aspect-ratio: 1 / 1;
+    width: 100px;
+    height: 100px;
+    top: 0%;
+    left: 0;
+    background-color: rgb(245, 204, 79);
+    border-radius: 1em;
+
+}
+
+.box.yellow {
+    background-color: rgb(245, 204, 79);
+}
+
+.box.blue {
+    background-color: rgb(45, 185, 232);
+}
+
+.box.red {
+    background-color: rgb(245, 79, 79);
+}
+
+canvas {
+    position: relative;
+    aspect-ratio: 1068/600;
+    background-color: transparent;
+    width: 100dvw;
+    height: 100dvh;
+}
+
+.title {
+    color: white;
+    font-size: 14rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    text-align: center;
+    font-style: italic;
+    font-family: Arial, Helvetica, sans-serif;
+    font-variation-settings: "opsz" 14;
+
+    transform: translateY(-55dvh);
+}
+
+.ball {
+    background-image: url('./assets/ball.png');
+    width: 50px;
+    height: 50px;
+    background-size: cover;
+    position: absolute;
+}
+
+.ball2 {
+    background-image: url('./assets/ball.png');
+    width: 50px;
+    height: 50px;
+    background-size: cover;
+    position: relative;
+    transform: translate(150dvw, 0);
+}
+
+.main-card {
+    position: relative;
+    top: 20dvh;
+    left: 50%;
+    transform: translate(-50%, -100%);
+}
+
+.footer {
+    position: relative;
+    font-family: Arial, Helvetica, sans-serif;
+    bottom: 0;
+    width: 100dvw;
+    height: 30dvh;
+    background-color: black;
+}
+
+.logo {
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    left: 45%;
+    z-index: 1;
+    transform: translate(-45%, 50%);
+}
+
+.logo img {
+    height: 100%;
+
+}
