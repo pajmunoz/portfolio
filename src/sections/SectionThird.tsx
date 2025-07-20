@@ -12,7 +12,7 @@ export default function SectionThird() {
         }
         const images = Array.from({ length: TOTAL_FRAMES }, (_, index) => {
             const img = new Image()
-            img.src = createURL(index, './../assets/stadium/')
+            img.src = createURL(index, 'https://pablojaramunoz.com/videos/stadium/')
             return img
         })
         const imageCanvas = {

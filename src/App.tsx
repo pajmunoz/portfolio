@@ -1,15 +1,20 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import './App.css';
-import { Button, Card, Flex, Typography } from "antd";
+import { Button, Card, Flex, Typography, Spin, Progress } from "antd";
 import img from './assets/FC25_Accolades_3x4_810x1080.png'
 import SectionThird from "./sections/SectionThird";
 import logo from './assets/pngwing.png'
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [imagesLoaded, setImagesLoaded] = useState(0);
+  const [totalImages, setTotalImages] = useState(0);
+
   const cardStyle: React.CSSProperties = {
     width: 620,
   };
@@ -21,138 +26,203 @@ function App() {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger, SplitText, ScrollSmoother);
 
-    const TOTAL_FRAMES = 50
+    const TOTAL_FRAMES = 50;
+    setTotalImages(TOTAL_FRAMES);
+    
     const createURL = (frame: number, url: string) => {
       const id = (frame + 1).toString().padStart(2, '0');
-      return new URL(`${url}${id}.png`, import.meta.url).href;
+      return `${url}${id}.png`;
     }
-    const images = Array.from({ length: TOTAL_FRAMES }, (_, index) => {
-      const img = new Image()
-      img.src = createURL(index, '/src/assets/vid2/')
-      return img
-    })
+    
+    const images: HTMLImageElement[] = [];
+    let loadedCount = 0;
 
-    const smoother = ScrollSmoother.create({
-      smooth: 0.5,
-      effects: true,
-      wrapper: '.wrapper',
-      content: '.content',
-    });
-    smoother.scrollTrigger.update();
-    const imageCanvas = {
-      frame: 0,
-    }
-    const tl = gsap.timeline({
-      defaults: {
-        duration: 2,
-        ease: 'power2.inOut',
-        yoyo: true,
-      },
-    });
-    const split = new SplitText('.title', {
-      type: 'chars',
-      autoSplit: true,
-    });
-    tl.to(imageCanvas, {
-      frame: TOTAL_FRAMES - 1,
-      ease: 'none',
-      snap: 'frame',
-      scrollTrigger: {
-        scrub: 0.5,
-      },
-      onUpdate: render,
-    }).to(split.chars, {
-      x: 100,
-      y: -200,
-      opacity: 0,
-      filter: 'blur(15px)',
-      scrollTrigger: {
-        scrub: 0.5,
-      },
-      duration: 0.7,
-      ease: "power4",
-      stagger: 0.04
-    }).from('.ball', {
-      filter: 'blur(1px)',
-      rotate: 0,
-      x: '-100dvw',
-      y: -250,
-      scale: 4,
+    const loadImage = (index: number): Promise<HTMLImageElement> => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          loadedCount++;
+          setImagesLoaded(loadedCount);
+          setLoadingProgress((loadedCount / TOTAL_FRAMES) * 100);
+          resolve(img);
+        };
+        img.onerror = () => {
+          console.error(`Failed to load image ${index + 1}`);
+          reject(new Error(`Failed to load image ${index + 1}`));
+        };
+        img.src = createURL(index, 'https://pablojaramunoz.com/videos/vid2/');
+      });
+    };
 
-    }).to('.ball', {
-
-      rotate: 360,
-      x: '900dvw',
-      scrollTrigger: {
-        scrub: .8,
+    // Load all images with progress tracking
+    const loadAllImages = async () => {
+      try {
+        const imagePromises = Array.from({ length: TOTAL_FRAMES }, (_, index) => 
+          loadImage(index)
+        );
+        
+        const loadedImages = await Promise.all(imagePromises);
+        images.push(...loadedImages);
+        
+        // All images loaded successfully
+        setIsLoading(false);
+        initializeAnimations(images);
+      } catch (error) {
+        console.error('Error loading images:', error);
+        setIsLoading(false);
+        // You could show an error message here
       }
-    }).to('.ball2', {
-      filter: 'blur(1px)',
-      scale: 5,
-      rotate: 360,
-      x: 100,
-      scrollTrigger: {
-        scrub: .1,
+    };
+
+    loadAllImages();
+
+    // Function to initialize animations after images are loaded
+    const initializeAnimations = (images: HTMLImageElement[]) => {
+      const smoother = ScrollSmoother.create({
+        smooth: 0.5,
+        effects: true,
+        wrapper: '.wrapper',
+        content: '.content',
+      });
+      smoother.scrollTrigger.update();
+      
+      const imageCanvas = {
+        frame: 0,
       }
-    });
+      
+      const tl = gsap.timeline({
+        defaults: {
+          duration: 2,
+          ease: 'power2.inOut',
+          yoyo: true,
+        },
+      });
+      
+      const split = new SplitText('.title', {
+        type: 'chars',
+        autoSplit: true,
+      });
+      
+      tl.to(imageCanvas, {
+        frame: TOTAL_FRAMES - 1,
+        ease: 'none',
+        snap: 'frame',
+        scrollTrigger: {
+          scrub: 0.5,
+        },
+        onUpdate: render,
+      }).to(split.chars, {
+        x: 100,
+        y: -200,
+        opacity: 0,
+        filter: 'blur(15px)',
+        scrollTrigger: {
+          scrub: 0.5,
+        },
+        duration: 0.7,
+        ease: "power4",
+        stagger: 0.04
+      }).from('.ball', {
+        filter: 'blur(1px)',
+        rotate: 0,
+        x: '-100dvw',
+        y: -250,
+        scale: 4,
+      }).to('.ball', {
+        rotate: 360,
+        x: '900dvw',
+        scrollTrigger: {
+          scrub: .8,
+        }
+      }).to('.ball2', {
+        filter: 'blur(1px)',
+        scale: 5,
+        rotate: 360,
+        x: 100,
+        scrollTrigger: {
+          scrub: .1,
+        }
+      });
 
-    // Main card animation with proper ScrollTrigger
-    gsap.fromTo('.main-card', {
-      y: -100,
-      opacity: 0,
-      filter: 'blur(2px)',
-    }, {
-      y: 0,
-      opacity: 1,
-      filter: 'blur(0px)',
-      duration: 0.3,
-      ease: "power4",
-      stagger: 0.04,
-      scrollTrigger: {
-        trigger: '.main-card',
-        start: 'top 80%',
-        end: 'top 20%',
-        scrub: 0.5,
+      // Main card animation with proper ScrollTrigger
+      gsap.fromTo('.main-card', {
+        y: -100,
+        opacity: 0,
+        filter: 'blur(2px)',
+      }, {
+        y: 0,
+        opacity: 1,
+        filter: 'blur(0px)',
+        duration: 0.3,
+        ease: "power4",
+        stagger: 0.04,
+        scrollTrigger: {
+          trigger: '.main-card',
+          start: 'top 80%',
+          end: 'top 20%',
+          scrub: 0.5,
+        }
+      });
+
+      // Initialize render function
+      function render() {
+        const canvas = document.getElementById('image') as HTMLCanvasElement | null;
+        if (!canvas) return;
+        // Set canvas size if not already set
+        const dpr = window.devicePixelRatio || 1;
+        const desiredWidth = 1800;
+        const desiredHeight = 800;
+        canvas.width = desiredWidth * dpr;
+        canvas.height = desiredHeight * dpr;
+
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(images[imageCanvas.frame], 0, 0, canvas.width, canvas.height);
+        }
       }
-    });
 
-
-    images[0].onload = () => render()
-
-    function render() {
-      const canvas = document.getElementById('image') as HTMLCanvasElement | null;
-      if (!canvas) return;
-      // Set canvas size if not already set
-      const dpr = window.devicePixelRatio || 1;
-      const desiredWidth = 1800;
-      const desiredHeight = 800;
-      canvas.width = desiredWidth * dpr;
-      canvas.height = desiredHeight * dpr;
-
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(images[imageCanvas.frame], 0, 0, canvas.width, canvas.height);
-      }
+      // Start rendering
+      render();
     }
 
   }, []);
 
 
   return (
-
-    <div className="wrapper">
-      <div className="content">
-        <section>
-          <div className="logo">
-            <img src={logo} alt="logo" />
+    <>
+      {isLoading && (
+        <div className="loading-screen">
+          <div className="loading-content">
+            <Spin size="large" />
+            <Typography.Title level={3} style={{ marginTop: 20, color: '#fff' }}>
+              Loading FC 25 Experience...
+            </Typography.Title>
+            <Progress 
+              percent={Math.round(loadingProgress)} 
+              status="active"
+              strokeColor="#1890ff"
+              style={{ width: 300, marginTop: 20 }}
+            />
+            <Typography.Text style={{ marginTop: 10, color: '#ccc' }}>
+              {imagesLoaded} / {totalImages} images loaded
+            </Typography.Text>
           </div>
-          <canvas id="image"></canvas>
-          <h1 className="title">
-            FC 25
-          </h1>
-          <div className="ball"></div>
-        </section>
+        </div>
+      )}
+      
+      <div className="wrapper" style={{ display: isLoading ? 'none' : 'block' }}>
+        <div className="content">
+          <section>
+            <div className="logo">
+              <img src={logo} alt="logo" />
+            </div>
+            <canvas id="image"></canvas>
+            <h1 className="title">
+              FC 25
+            </h1>
+            <div className="ball"></div>
+          </section>
         <section>
 
 
@@ -185,6 +255,7 @@ function App() {
         </div>
       </div>
     </div>
+    </>
   )
 }
 
