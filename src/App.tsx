@@ -28,7 +28,7 @@ function App() {
     }
     const images = Array.from({ length: TOTAL_FRAMES }, (_, index) => {
       const img = new Image()
-      img.src = createURL(index, './assets/vid2/')
+      img.src = createURL(index, '/src/assets/vid2/')
       return img
     })
 
